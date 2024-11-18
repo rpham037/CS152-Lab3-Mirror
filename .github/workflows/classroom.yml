@@ -1,0 +1,38 @@
+name: Lab3 Autograder
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install pip dependencies
+      run: |
+        pip install pwntools
+        pip install pwntools PyYAML
+
+    - name: Install QEMU
+      run: |
+        sudo apt-get update >/dev/null 2>&1 && sudo apt-get install -y qemu-system-i386 >/dev/null 2>&1
+
+    - name: Download and run script
+      run: |
+        wget https://ucr-cs153.github.io/f24_lab3_autograder.py >/dev/null 
+        python3 f24_lab3_autograder.py
+
+    - name: Clean up
+      run: |
+        rm -f f24_lab3_autograder.py
+        rm -f test_.*
