@@ -877,10 +877,12 @@ SYSCALL(shm_close)
     163b:	b8 17 00 00 00       	mov    $0x17,%eax
     1640:	cd 40                	int    $0x40
     1642:	c3                   	ret    
-    1643:	66 90                	xchg   %ax,%ax
-    1645:	66 90                	xchg   %ax,%ax
-    1647:	66 90                	xchg   %ax,%ax
-    1649:	66 90                	xchg   %ax,%ax
+
+00001643 <v2p>:
+SYSCALL(v2p)
+    1643:	b8 18 00 00 00       	mov    $0x18,%eax
+    1648:	cd 40                	int    $0x40
+    164a:	c3                   	ret    
     164b:	66 90                	xchg   %ax,%ax
     164d:	66 90                	xchg   %ax,%ax
     164f:	90                   	nop

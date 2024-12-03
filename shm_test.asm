@@ -616,10 +616,12 @@ SYSCALL(shm_close)
     138b:	b8 17 00 00 00       	mov    $0x17,%eax
     1390:	cd 40                	int    $0x40
     1392:	c3                   	ret    
-    1393:	66 90                	xchg   %ax,%ax
-    1395:	66 90                	xchg   %ax,%ax
-    1397:	66 90                	xchg   %ax,%ax
-    1399:	66 90                	xchg   %ax,%ax
+
+00001393 <v2p>:
+SYSCALL(v2p)
+    1393:	b8 18 00 00 00       	mov    $0x18,%eax
+    1398:	cd 40                	int    $0x40
+    139a:	c3                   	ret    
     139b:	66 90                	xchg   %ax,%ax
     139d:	66 90                	xchg   %ax,%ax
     139f:	90                   	nop

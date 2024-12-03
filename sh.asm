@@ -2131,10 +2131,12 @@ SYSCALL(shm_close)
     1ecb:	b8 17 00 00 00       	mov    $0x17,%eax
     1ed0:	cd 40                	int    $0x40
     1ed2:	c3                   	ret    
-    1ed3:	66 90                	xchg   %ax,%ax
-    1ed5:	66 90                	xchg   %ax,%ax
-    1ed7:	66 90                	xchg   %ax,%ax
-    1ed9:	66 90                	xchg   %ax,%ax
+
+00001ed3 <v2p>:
+SYSCALL(v2p)
+    1ed3:	b8 18 00 00 00       	mov    $0x18,%eax
+    1ed8:	cd 40                	int    $0x40
+    1eda:	c3                   	ret    
     1edb:	66 90                	xchg   %ax,%ax
     1edd:	66 90                	xchg   %ax,%ax
     1edf:	90                   	nop

@@ -6041,10 +6041,12 @@ SYSCALL(shm_close)
     497b:	b8 17 00 00 00       	mov    $0x17,%eax
     4980:	cd 40                	int    $0x40
     4982:	c3                   	ret    
-    4983:	66 90                	xchg   %ax,%ax
-    4985:	66 90                	xchg   %ax,%ax
-    4987:	66 90                	xchg   %ax,%ax
-    4989:	66 90                	xchg   %ax,%ax
+
+00004983 <v2p>:
+SYSCALL(v2p)
+    4983:	b8 18 00 00 00       	mov    $0x18,%eax
+    4988:	cd 40                	int    $0x40
+    498a:	c3                   	ret    
     498b:	66 90                	xchg   %ax,%ax
     498d:	66 90                	xchg   %ax,%ax
     498f:	90                   	nop
