@@ -96,7 +96,7 @@ int shm_close(int id) {
             }
 
             // No more references; clean up
-            void *fr = shm_table.shm_pages[i].fr; // Physical frame
+            //void *fr = shm_table.shm_pages[i].fr; // Physical frame
             shm_table.shm_pages[i] = (struct shm_page){0}; // Reset entry
 
             // Unmap the virtual address associated with this shared memory
@@ -108,7 +108,7 @@ int shm_close(int id) {
                 lcr3(V2P(curproc->pgdir)); // Refresh TLB
             }
 
-            kfree(fr); // Free the physical memory
+            //kfree(fr); // Free the physical memory
 
             break; // Exit loop after processing
         }
