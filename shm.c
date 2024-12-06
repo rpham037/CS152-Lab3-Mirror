@@ -62,6 +62,7 @@ int shm_open(int id, char **pointer) {
             memset(shm_table.shm_pages[i].frame, 0, PGSIZE);  // Initialize memory
             shm_table.shm_pages[i].refcnt = 1;
 
+
             if (mappages(current_proc->pgdir, (char *)va, PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W | PTE_U) < 0) {
                 kfree(shm_table.shm_pages[i].frame);  // Free memory on failure
                 shm_table.shm_pages[i].id = 0;
