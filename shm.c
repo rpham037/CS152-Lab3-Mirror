@@ -62,9 +62,9 @@ int shm_open(int id, char **pointer) {
             memset(shm_table.shm_pages[i].frame, 0, PGSIZE);  // Initialize memory
             shm_table.shm_pages[i].refcnt = 1;
 
-            if (mappages(current_proc->pgdir, (char *)va, PGSIZE, 
-                         V2P(shm_table.shm_pages[i].frame), PTE_W | PTE_U) < 0) {
-                //kfree(shm_table.shm_pages[i].frame);  // Free memory on failure
+
+            if (mappages(current_proc->pgdir, (char *)va, PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W | PTE_U) < 0) {
+                kfree(shm_table.shm_pages[i].frame);  // Free memory on failure
                 shm_table.shm_pages[i].id = 0;
                 shm_table.shm_pages[i].frame = 0;
                 shm_table.shm_pages[i].refcnt = 0;
@@ -93,7 +93,10 @@ int shm_close(int id) {
                 release(&shm_table.lock);
                 return 0;  // Shared memory still in use
             }
-
+            if(deallocuvm(myproc()->pgdir, PGROUNDDOWN(myproc()->sz - PGSIZE), PGSIZE) < 0){ // Unmap page from process's addr space
+                release(&shm_table.lock);
+                return -1; // Return an error deallocating is not executed
+            }
             // Last reference, free resources
             kfree(shm_table.shm_pages[i].frame);  // Free physical memory
             shm_table.shm_pages[i].frame = 0;
