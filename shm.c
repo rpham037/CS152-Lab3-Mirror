@@ -32,14 +32,14 @@ int shm_open(int id, char **pointer) {
     acquire(&shm_table.lock);
 
     struct proc *current_proc = myproc();
-    uint va = PGROUNDUP(current_proc->sz);  // Get next aligned virtual address
 
     // Case 1: Check if the shared memory segment already exists
     for (int i = 0; i < 64; i++) {
         if (shm_table.shm_pages[i].id == id) {
             shm_table.shm_pages[i].refcnt++;  // Increment reference count
-            if (mappages(current_proc->pgdir, (char *)va, PGSIZE, 
-                         V2P(shm_table.shm_pages[i].frame), PTE_W | PTE_U) < 0) {
+            uint va = PGROUNDUP(current_proc->sz);  // Get next aligned virtual address (moved here)
+
+            if (mappages(current_proc->pgdir, (char *)va, PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W | PTE_U) < 0) {
                 release(&shm_table.lock);
                 return -1;  // Mapping failed
             }
@@ -61,6 +61,8 @@ int shm_open(int id, char **pointer) {
             }
             memset(shm_table.shm_pages[i].frame, 0, PGSIZE);  // Initialize memory
             shm_table.shm_pages[i].refcnt = 1;
+            uint va = PGROUNDUP(current_proc->sz);  // Get next aligned virtual address
+
 
 
             if (mappages(current_proc->pgdir, (char *)va, PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W | PTE_U) < 0) {
