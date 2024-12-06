@@ -107,6 +107,8 @@ extern int sys_uptime(void);
 extern int sys_shm_open(void);
 extern int sys_shm_close(void);
 
+extern int sys_v2p(void);
+
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -130,7 +132,8 @@ static int (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_shm_open] sys_shm_open,
-[SYS_shm_close] sys_shm_close
+[SYS_shm_close] sys_shm_close,
+[SYS_v2p] sys_v2p,
 };
 
 void
