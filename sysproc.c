@@ -116,9 +116,8 @@ sys_uptime(void)
 }
 
 int sys_v2p(void) {
-    uint va;    // Virtual address input
-    uint *pa;   // Pointer to store physical address
-
+    int va;    // Virtual address input
+    int *pa;   // Pointer to store physical address
     // Get the virtual address (first argument)
     if (argint(0, (int *)&va) < 0) {
         cprintf("v2p: Failed to retrieve virtual address\n");
@@ -130,30 +129,5 @@ int sys_v2p(void) {
         cprintf("v2p: Failed to retrieve physical address pointer\n");
         return -1;
     }
-
-    // Get the current process
-    struct proc *current_proc = myproc();
-
-    // Ensure the virtual address is valid
-    if (va >= KERNBASE || va >= current_proc->sz) {
-        cprintf("v2p: Invalid virtual address 0x%x\n", va);
-        return -1;
-    }
-
-    // Get the page table entry (PTE) for the virtual address
-    pte_t *pte = walkpgdir(current_proc->pgdir, (void *)va, 0);
-    if (!pte) {
-        cprintf("v2p: PTE not found for virtual address 0x%x\n", va);
-        return -1;
-    }
-
-    if (!(*pte & PTE_P)) {  // Check if the PTE is present
-        cprintf("v2p: PTE not present for virtual address 0x%x\n", va);
-        return -1;
-    }
-
-    // Calculate the physical address
-    *pa = PTE_ADDR(*pte) | (va & 0xFFF);  // Combine page frame and offset
-    cprintf("v2p: Virtual address 0x%x maps to physical address 0x%x\n", va, *pa);
-    return 0;  // Success
+    return v2p(va,pa);
 }
