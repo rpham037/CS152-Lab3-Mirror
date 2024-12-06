@@ -4,7 +4,7 @@
 8010ff58 panicked
 80100400 consputc.part.0
 80100600 printint
-80107790 digits.0
+801076f0 digits.0
 00000000 exec.c
 00000000 file.c
 00000000 fs.c
@@ -22,9 +22,9 @@
 00000000 kalloc.c
 00000000 kbd.c
 8011267c shift.1
-80107ac0 shiftcode
-801079c0 togglecode
-801079a0 charcode.0
+80107a20 shiftcode
+80107920 togglecode
+80107900 charcode.0
 80109200 normalmap
 80109100 shiftmap
 80109000 ctlmap
@@ -43,12 +43,12 @@
 801037d0 allocproc
 8010b000 first.1
 80114c54 initproc
-80107e2c states.0
+80107d8c states.0
 00000000 sleeplock.c
 00000000 spinlock.c
 00000000 string.c
 00000000 syscall.c
-80107ea0 syscalls
+80107e00 syscalls
 00000000 sysfile.c
 80104b80 create
 00000000 sysproc.c
@@ -348,7 +348,7 @@
 801059f0 alltraps
 80106573 vector173
 801062f4 vector117
-801075f0 shm_close
+801075a0 shm_close
 801061b9 vector82
 801067bf vector222
 80105f2d vector8
