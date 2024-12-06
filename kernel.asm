@@ -16235,88 +16235,90 @@ int shm_close(int id) {
 801075d0:	83 c0 01             	add    $0x1,%eax
 801075d3:	83 c2 0c             	add    $0xc,%edx
 801075d6:	83 f8 40             	cmp    $0x40,%eax
-801075d9:	74 35                	je     80107610 <shm_close+0x70>
+801075d9:	74 45                	je     80107620 <shm_close+0x80>
         if (shm_table.shm_pages[i].id == id) {
 801075db:	39 32                	cmp    %esi,(%edx)
 801075dd:	75 f1                	jne    801075d0 <shm_close+0x30>
             id_found = 1;
 
-            shm_table.shm_pages[i].refcnt--; // Decrement reference count
+            // Decrement reference count
+            shm_table.shm_pages[i].refcnt--;
 801075df:	8d 04 40             	lea    (%eax,%eax,2),%eax
 801075e2:	c1 e0 02             	shl    $0x2,%eax
 801075e5:	8b b0 1c 55 11 80    	mov    -0x7feeaae4(%eax),%esi
-801075eb:	8d 56 ff             	lea    -0x1(%esi),%edx
+801075eb:	8d 88 e0 54 11 80    	lea    -0x7feeab20(%eax),%ecx
+801075f1:	8d 56 ff             	lea    -0x1(%esi),%edx
             if (shm_table.shm_pages[i].refcnt > 0) {
-801075ee:	31 f6                	xor    %esi,%esi
-            shm_table.shm_pages[i].refcnt--; // Decrement reference count
-801075f0:	89 90 1c 55 11 80    	mov    %edx,-0x7feeaae4(%eax)
+801075f4:	31 f6                	xor    %esi,%esi
+            shm_table.shm_pages[i].refcnt--;
+801075f6:	89 90 1c 55 11 80    	mov    %edx,-0x7feeaae4(%eax)
             if (shm_table.shm_pages[i].refcnt > 0) {
-801075f6:	85 d2                	test   %edx,%edx
-801075f8:	7e 26                	jle    80107620 <shm_close+0x80>
+801075fc:	85 d2                	test   %edx,%edx
+801075fe:	7e 30                	jle    80107630 <shm_close+0x90>
 
             break; // Exit loop after processing
         }
     }
 
-    release(&(shm_table.lock));
-801075fa:	83 ec 0c             	sub    $0xc,%esp
-801075fd:	68 e0 54 11 80       	push   $0x801154e0
-80107602:	e8 b9 d0 ff ff       	call   801046c0 <release>
+    release(&(shm_table.lock)); // Release the lock
+80107600:	83 ec 0c             	sub    $0xc,%esp
+80107603:	68 e0 54 11 80       	push   $0x801154e0
+80107608:	e8 b3 d0 ff ff       	call   801046c0 <release>
 
     return id_found ? 0 : 1; // Return 0 if successful, 1 if ID not found
-80107607:	8d 65 f8             	lea    -0x8(%ebp),%esp
-8010760a:	89 f0                	mov    %esi,%eax
-8010760c:	5b                   	pop    %ebx
-8010760d:	5e                   	pop    %esi
-8010760e:	5d                   	pop    %ebp
-8010760f:	c3                   	ret    
-80107610:	be 01 00 00 00       	mov    $0x1,%esi
-80107615:	eb e3                	jmp    801075fa <shm_close+0x5a>
-80107617:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
-8010761e:	66 90                	xchg   %ax,%ax
+8010760d:	8d 65 f8             	lea    -0x8(%ebp),%esp
+80107610:	89 f0                	mov    %esi,%eax
+80107612:	5b                   	pop    %ebx
+80107613:	5e                   	pop    %esi
+80107614:	5d                   	pop    %ebp
+80107615:	c3                   	ret    
+80107616:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
+8010761d:	8d 76 00             	lea    0x0(%esi),%esi
+80107620:	be 01 00 00 00       	mov    $0x1,%esi
+80107625:	eb d9                	jmp    80107600 <shm_close+0x60>
+80107627:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
+8010762e:	66 90                	xchg   %ax,%ax
             pte_t *pte = walkpgdir(curproc->pgdir, (char *)vaddr, 0);
-80107620:	83 ec 04             	sub    $0x4,%esp
-            void *fr = shm_table.shm_pages[i].fr;
-80107623:	8b b0 18 55 11 80    	mov    -0x7feeaae8(%eax),%esi
+80107630:	83 ec 04             	sub    $0x4,%esp
+            void *fr = shm_table.shm_pages[i].fr; // Physical frame
+80107633:	8b b0 18 55 11 80    	mov    -0x7feeaae8(%eax),%esi
             shm_table.shm_pages[i] = (struct shm_page){0}; // Reset entry
-80107629:	c7 80 14 55 11 80 00 	movl   $0x0,-0x7feeaaec(%eax)
-80107630:	00 00 00 
+80107639:	c7 80 14 55 11 80 00 	movl   $0x0,-0x7feeaaec(%eax)
+80107640:	00 00 00 
             pte_t *pte = walkpgdir(curproc->pgdir, (char *)vaddr, 0);
-80107633:	6a 00                	push   $0x0
+80107643:	6a 00                	push   $0x0
             shm_table.shm_pages[i] = (struct shm_page){0}; // Reset entry
-80107635:	c7 80 18 55 11 80 00 	movl   $0x0,-0x7feeaae8(%eax)
-8010763c:	00 00 00 
-8010763f:	c7 80 1c 55 11 80 00 	movl   $0x0,-0x7feeaae4(%eax)
-80107646:	00 00 00 
-            uint vaddr = curproc->sz - PGSIZE; // Virtual address of the page
-80107649:	8b 03                	mov    (%ebx),%eax
-8010764b:	2d 00 10 00 00       	sub    $0x1000,%eax
+80107645:	c7 80 18 55 11 80 00 	movl   $0x0,-0x7feeaae8(%eax)
+8010764c:	00 00 00 
+8010764f:	c7 80 1c 55 11 80 00 	movl   $0x0,-0x7feeaae4(%eax)
+80107656:	00 00 00 
+            uint vaddr = PGROUNDUP((uint)shm_table.shm_pages[i].fr);
+80107659:	8b 41 38             	mov    0x38(%ecx),%eax
+8010765c:	05 ff 0f 00 00       	add    $0xfff,%eax
+80107661:	25 00 f0 ff ff       	and    $0xfffff000,%eax
             pte_t *pte = walkpgdir(curproc->pgdir, (char *)vaddr, 0);
-80107650:	50                   	push   %eax
-80107651:	ff 73 04             	push   0x4(%ebx)
-80107654:	e8 47 f4 ff ff       	call   80106aa0 <walkpgdir>
+80107666:	50                   	push   %eax
+80107667:	ff 73 04             	push   0x4(%ebx)
+8010766a:	e8 31 f4 ff ff       	call   80106aa0 <walkpgdir>
             if (pte && (*pte & PTE_P)) {
-80107659:	83 c4 10             	add    $0x10,%esp
-8010765c:	85 c0                	test   %eax,%eax
-8010765e:	74 16                	je     80107676 <shm_close+0xd6>
-80107660:	f6 00 01             	testb  $0x1,(%eax)
-80107663:	74 11                	je     80107676 <shm_close+0xd6>
-                *pte = 0; // Unmap page
-80107665:	c7 00 00 00 00 00    	movl   $0x0,(%eax)
+8010766f:	83 c4 10             	add    $0x10,%esp
+80107672:	85 c0                	test   %eax,%eax
+80107674:	74 16                	je     8010768c <shm_close+0xec>
+80107676:	f6 00 01             	testb  $0x1,(%eax)
+80107679:	74 11                	je     8010768c <shm_close+0xec>
+                *pte = 0; // Clear the page table entry
+8010767b:	c7 00 00 00 00 00    	movl   $0x0,(%eax)
                 lcr3(V2P(curproc->pgdir)); // Refresh TLB
-8010766b:	8b 43 04             	mov    0x4(%ebx),%eax
-8010766e:	05 00 00 00 80       	add    $0x80000000,%eax
-80107673:	0f 22 d8             	mov    %eax,%cr3
-            kfree(fr); // Free physical page
-80107676:	83 ec 0c             	sub    $0xc,%esp
-            curproc->sz -= PGSIZE; // Update process size
-80107679:	81 2b 00 10 00 00    	subl   $0x1000,(%ebx)
-            kfree(fr); // Free physical page
-8010767f:	56                   	push   %esi
+80107681:	8b 43 04             	mov    0x4(%ebx),%eax
+80107684:	05 00 00 00 80       	add    $0x80000000,%eax
+80107689:	0f 22 d8             	mov    %eax,%cr3
+            kfree(fr); // Free the physical memory
+8010768c:	83 ec 0c             	sub    $0xc,%esp
+8010768f:	56                   	push   %esi
             break; // Exit loop after processing
-80107680:	31 f6                	xor    %esi,%esi
-            kfree(fr); // Free physical page
-80107682:	e8 59 ae ff ff       	call   801024e0 <kfree>
+80107690:	31 f6                	xor    %esi,%esi
+            kfree(fr); // Free the physical memory
+80107692:	e8 49 ae ff ff       	call   801024e0 <kfree>
             break; // Exit loop after processing
-80107687:	83 c4 10             	add    $0x10,%esp
-8010768a:	e9 6b ff ff ff       	jmp    801075fa <shm_close+0x5a>
+80107697:	83 c4 10             	add    $0x10,%esp
+8010769a:	e9 61 ff ff ff       	jmp    80107600 <shm_close+0x60>

@@ -89,31 +89,32 @@ int shm_close(int id) {
         if (shm_table.shm_pages[i].id == id) {
             id_found = 1;
 
-            shm_table.shm_pages[i].refcnt--; // Decrement reference count
+            // Decrement reference count
+            shm_table.shm_pages[i].refcnt--;
             if (shm_table.shm_pages[i].refcnt > 0) {
                 break; // Other processes still using this segment
             }
 
             // No more references; clean up
-            void *fr = shm_table.shm_pages[i].fr;
+            void *fr = shm_table.shm_pages[i].fr; // Physical frame
             shm_table.shm_pages[i] = (struct shm_page){0}; // Reset entry
 
-            uint vaddr = curproc->sz - PGSIZE; // Virtual address of the page
+            // Unmap the virtual address associated with this shared memory
+            uint vaddr = PGROUNDUP((uint)shm_table.shm_pages[i].fr);
             pte_t *pte = walkpgdir(curproc->pgdir, (char *)vaddr, 0);
 
             if (pte && (*pte & PTE_P)) {
-                *pte = 0; // Unmap page
+                *pte = 0; // Clear the page table entry
                 lcr3(V2P(curproc->pgdir)); // Refresh TLB
             }
 
-            curproc->sz -= PGSIZE; // Update process size
-            kfree(fr); // Free physical page
+            kfree(fr); // Free the physical memory
 
             break; // Exit loop after processing
         }
     }
 
-    release(&(shm_table.lock));
+    release(&(shm_table.lock)); // Release the lock
 
     return id_found ? 0 : 1; // Return 0 if successful, 1 if ID not found
 }
