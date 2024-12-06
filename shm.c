@@ -95,7 +95,7 @@ int shm_close(int id) {
             }
 
             // Last reference, free resources
-            //kfree(shm_table.shm_pages[i].frame);  // Free physical memory
+            kfree(shm_table.shm_pages[i].frame);  // Free physical memory
             shm_table.shm_pages[i].frame = 0;
             shm_table.shm_pages[i].id = 0;
             shm_table.shm_pages[i].refcnt = 0;
