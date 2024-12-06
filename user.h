@@ -25,7 +25,7 @@ int sleep(int);
 int uptime(void);
 int shm_open(int, char **);
 int shm_close(int);
-int v2p(uint va, uint *pa);
+int v2p(int va, int *pa);
 
 // ulib.c
 int stat(char*, struct stat*);
