@@ -13,7 +13,8 @@ struct {
     uint id;
     char *frame;
     int refcnt;
-  } shm_pages[64];
+  } 
+  shm_pages[64];
 } shm_table;
 
 void shminit() {
@@ -45,6 +46,7 @@ int shm_open(int id, char **pointer) {
             }
             *pointer = (char *)va;  // Set the pointer to the virtual address
             current_proc->sz = va + PGSIZE;  // Update process's virtual address size
+            current_proc->shm_va[i] = va; // Storing virtual address
             release(&shm_table.lock);
             return 0;
         }
@@ -64,7 +66,6 @@ int shm_open(int id, char **pointer) {
             uint va = PGROUNDUP(current_proc->sz);  // Get next aligned virtual address
 
 
-
             if (mappages(current_proc->pgdir, (char *)va, PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W | PTE_U) < 0) {
                 kfree(shm_table.shm_pages[i].frame);  // Free memory on failure
                 shm_table.shm_pages[i].id = 0;
@@ -75,6 +76,7 @@ int shm_open(int id, char **pointer) {
             }
             *pointer = (char *)va;  // Set the pointer to the virtual address
             current_proc->sz = va + PGSIZE;  // Update process's virtual address size
+            current_proc->shm_va[i] = va; // Storing virtual address
             release(&shm_table.lock);
             return 0;
         }
@@ -95,7 +97,20 @@ int shm_close(int id) {
                 release(&shm_table.lock);
                 return 0;  // Shared memory still in use
             }
-            if(deallocuvm(myproc()->pgdir, PGROUNDDOWN(myproc()->sz - PGSIZE), PGSIZE) < 0){ // Unmap page from process's addr space
+
+            uint va = 0;
+            for (struct proc *p = ptable.proc; p < &ptable.proc[NPROC]; p++) { // Find corresponding virtual address of shared mem seg for this process
+                if (p->state != UNUSED && p->shm_va[i] != 0) {
+                    va = p->shm_va[i];
+                    break; 
+                }
+            }
+            if (va == 0) { // Release lock if shared memory isnt found
+                release(&shm_table.lock);
+                return -1; 
+            }
+
+            if(deallocuvm(myproc()->pgdir, va, PGSIZE) < 0){ // Unmap page from process's addr space
                 release(&shm_table.lock);
                 return -1; // Return an error deallocating is not executed
             }
