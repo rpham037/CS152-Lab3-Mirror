@@ -1,9 +1,9 @@
 #include "param.h"
 #include "types.h"
-#include "defs.h"
 #include "x86.h"
 #include "memlayout.h"
 #include "mmu.h"
+#include "defs.h"
 #include "proc.h"
 #include "spinlock.h"
 
@@ -47,7 +47,6 @@ int shm_open(int id, char **pointer) {
             }
             *pointer = (char *)va;  // Set the pointer to the virtual address
             current_proc->sz = va + PGSIZE;  // Update process's virtual address size
-            current_proc->shm_va[i] = va; // Storing virtual address
             release(&shm_table.lock);
             return 0;
         }
@@ -72,7 +71,6 @@ int shm_open(int id, char **pointer) {
             }
             *pointer = (char *)va;  // Set the pointer to the virtual address
             current_proc->sz = va + PGSIZE;  // Update process's virtual address size
-            current_proc->shm_va[i] = va; // Storing virtual address
             release(&shm_table.lock);
             return 0;
         }
