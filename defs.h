@@ -187,6 +187,8 @@ void            switchkvm(void);
 int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *pgdir, char *uva);
 void            uvmunmap(pde_t *pgdir, void *va, uint size, int do_free);
+pte_t*          walkpgdir(pde_t*, const void*, int );
+
 
 
 //made mappages visible (and removed static) to facilitate implementing shm

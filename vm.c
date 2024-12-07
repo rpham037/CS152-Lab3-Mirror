@@ -392,3 +392,24 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
 //PAGEBREAK!
 // Blank page.
 
+void
+uvmunmap(pde_t *pgdir, void *va, uint size, int do_free) {
+  char *a, *last;
+  pte_t *pte;
+
+  a = (char*)PGROUNDDOWN((uint)va);
+  last = (char*)PGROUNDDOWN(((uint)va) + size - 1);
+
+  for(; a <= last; a += PGSIZE){
+      pte = walkpgdir(pgdir, a, 0);
+      if(pte == 0 || (*pte & PTE_P) == 0) {
+          panic("uvmunmap: page not present");
+      }
+
+      if(do_free){ //Free physical memory
+          char *frame = P2V(PTE_ADDR(*pte));
+          kfree(frame);
+      }
+      *pte = 0;
+  }
+}
